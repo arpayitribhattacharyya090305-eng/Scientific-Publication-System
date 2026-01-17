@@ -1,0 +1,72 @@
+.login-container {
+  min-height: 100vh;
+  position: relative;              /* REQUIRED for overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-image: url("../assets/research.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Dark overlay */
+.login-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+}
+
+.login-box {
+  position: relative;
+  z-index: 1;                      /* Above overlay */
+  background: white;
+  padding: 30px;
+  width: 320px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.login-box input,
+.login-box select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 10px;
+  background: #2e5fc9;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.institute-name {
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  text-align: center;
+  font-size: 50px;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 1px;
+  z-index: 2;
+}
+
+.institute-subtitle {
+  font-size: 16px;
+  font-weight: normal;
+  margin-top: 6px;
+  opacity: 0.9;
+}
