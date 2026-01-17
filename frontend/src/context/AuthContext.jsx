@@ -1,0 +1,19 @@
+import { createContext, useContext, useState } from "react";
+
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [role, setRole] = useState("admin"); // change to "researcher"
+  //const [role, setRole] = useState("researcher");
+
+
+  return (
+    <AuthContext.Provider value={{ role, setRole }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
