@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";   // ✅ ADDED
+import { Link } from "react-router-dom";
 import Layout from "../components/Dashboard/Layout";
 import Modal from "../components/common/Modal";
 import API from "../services/api";
@@ -7,13 +7,16 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Researchers() {
   const { role } = useAuth();
+
   const [researchers, setResearchers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+
+  // 🔥 FIXED FORM STATE (matches backend)
   const [form, setForm] = useState({
-    Employee_ID: "",
-    Name: "",
-    Is_Editor_Chief: false,
-    Office_Number: ""
+    employeeId: "",
+    name: "",
+    officeNumber: "",
+    isEditorChief: false
   });
 
   useEffect(() => {
@@ -26,14 +29,37 @@ export default function Researchers() {
       .catch(err => console.error(err));
   };
 
+  // 🔥 FIXED SUBMIT HANDLER
   const handleSubmit = () => {
-    API.post("/api/researchers", form)
+    // Basic validation
+    if (!form.employeeId || !form.name || !form.officeNumber) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    const payload = {
+      employeeId: Number(form.employeeId),
+      name: form.name,
+      officeNumber: Number(form.officeNumber),
+      isEditorChief: form.isEditorChief
+    };
+
+    console.log("SENDING:", payload); // ✅ debug
+
+    API.post("/api/researchers", payload)
       .then(() => {
         alert("Researcher added successfully");
         setShowModal(false);
+        setForm({
+          employeeId: "",
+          name: "",
+          officeNumber: "",
+          isEditorChief: false
+        });
         fetchResearchers();
       })
       .catch(err => {
+        console.error("ADD ERROR:", err.response?.data);
         alert(err.response?.data?.message || "Error adding researcher");
       });
   };
@@ -51,26 +77,43 @@ export default function Researchers() {
       {showModal && (
         <Modal title="Add Researcher" onClose={() => setShowModal(false)}>
           <input
+            type="number"
             placeholder="Employee ID"
-            onChange={e => setForm({ ...form, Employee_ID: e.target.value })}
+            value={form.employeeId}
+            onChange={e =>
+              setForm({ ...form, employeeId: e.target.value })
+            }
           />
+
           <input
+            type="text"
             placeholder="Name"
-            onChange={e => setForm({ ...form, Name: e.target.value })}
+            value={form.name}
+            onChange={e =>
+              setForm({ ...form, name: e.target.value })
+            }
           />
+
           <input
+            type="number"
             placeholder="Office Number"
-            onChange={e => setForm({ ...form, Office_Number: e.target.value })}
+            value={form.officeNumber}
+            onChange={e =>
+              setForm({ ...form, officeNumber: e.target.value })
+            }
           />
+
           <label>
             <input
               type="checkbox"
+              checked={form.isEditorChief}
               onChange={e =>
-                setForm({ ...form, Is_Editor_Chief: e.target.checked })
+                setForm({ ...form, isEditorChief: e.target.checked })
               }
             />
             Editor-in-Chief
           </label>
+
           <button onClick={handleSubmit}>Add</button>
         </Modal>
       )}
@@ -89,7 +132,7 @@ export default function Researchers() {
             <tr key={r.Employee_ID}>
               <td>{r.Employee_ID}</td>
 
-              {/* ✅ CLICKABLE NAME */}
+              {/* ✅ CLICKABLE NAME (UNCHANGED) */}
               <td>
                 <Link
                   to={`/researchers/${r.Employee_ID}`}
