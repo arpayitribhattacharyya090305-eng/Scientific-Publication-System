@@ -56,4 +56,48 @@ router.get("/:id/skills", (req, res) => {
 });
 
 
+// ADD researcher 
+router.post("/", (req, res) => {
+  console.log("REQ BODY:", req.body); // 🔥 keep for debugging
+
+  const {
+    employeeId,
+    name,
+    officeNumber,
+    isEditorChief
+  } = req.body;
+
+  if (!employeeId || !name || !officeNumber) {
+    return res.status(400).json({
+      message: "Missing required fields",
+      bodyReceived: req.body
+    });
+  }
+
+  const editorValue = isEditorChief ? 1 : 0;
+
+  const sql = `
+    INSERT INTO Researcher 
+    (Employee_ID, Name, Is_Editor_Chief, Office_Number)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(
+    sql,
+    [employeeId, name, editorValue, officeNumber],
+    (err, result) => {
+      if (err) {
+        console.error("DB ERROR:", err);
+        return res.status(500).json(err);
+      }
+
+      res.status(201).json({
+        message: "Researcher added successfully"
+      });
+    }
+  );
+});
+
+
+
 module.exports = router;
